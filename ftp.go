@@ -29,23 +29,10 @@ func NewFromConfig(c Configuration) *FTP {
 	}
 }
 
-// Dial dials in the FTP server
-func (f *FTP) Dial() (err error) {
-	if f.Timeout > 0 {
-		f.conn, err = ftp.DialTimeout(f.Addr, f.Timeout)
-	} else {
-		f.conn, err = ftp.Dial(f.Addr)
-	}
-	return
-}
+// Copy copies a file from the remote server
+func (f *FTP) Copy(src, dst string) (err error) {
+	// TODO Add logs
 
-// Login signs in to the FTP server
-func (f *FTP) Login() error {
-	return f.conn.Login(f.Username, f.Password)
-}
-
-// Move moves a file from the remote server
-func (f *FTP) Move(src, dst string) (err error) {
 	// Download file
 	var r io.ReadCloser
 	if r, err = f.conn.Retr(src); err != nil {
@@ -61,7 +48,35 @@ func (f *FTP) Move(src, dst string) (err error) {
 	defer dstFile.Close()
 
 	// Copy to dst
-	if _, err = io.Copy(dstFile, r); err != nil {
+	_, err = io.Copy(dstFile, r)
+	return
+}
+
+// Dial dials in the FTP server
+func (f *FTP) Dial() (err error) {
+	// TODO Add logs
+
+	if f.Timeout > 0 {
+		f.conn, err = ftp.DialTimeout(f.Addr, f.Timeout)
+	} else {
+		f.conn, err = ftp.Dial(f.Addr)
+	}
+	return
+}
+
+// Login signs in to the FTP server
+func (f *FTP) Login() error {
+	// TODO Add logs
+
+	return f.conn.Login(f.Username, f.Password)
+}
+
+// Move moves a file from the remote server
+func (f *FTP) Move(src, dst string) (err error) {
+	// TODO Add logs
+
+	// Copy
+	if err = f.Copy(src, dst); err != nil {
 		return
 	}
 
