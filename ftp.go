@@ -2,9 +2,7 @@ package ftp
 
 import (
 	"io"
-
 	"os"
-
 	"time"
 
 	"github.com/jlaffaye/ftp"
