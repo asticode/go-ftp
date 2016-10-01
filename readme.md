@@ -1,3 +1,3 @@
-# Mysql
+# FTP
 
-This package allows a smooth use of MySQL
+This package allows a smooth use of FTP
