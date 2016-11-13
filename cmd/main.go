@@ -32,8 +32,8 @@ func main() {
 
 	// Switch on subcommand
 	switch s {
-	case "copy":
-		if err := f.Copy(*inputPath, *outputPath); err != nil {
+	case "download":
+		if err := f.Download(*inputPath, *outputPath); err != nil {
 			l.Fatal(err)
 		}
 	default:

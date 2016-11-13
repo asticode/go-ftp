@@ -44,44 +44,6 @@ func (f *FTP) Connect() (err error) {
 	return
 }
 
-// Copy copies a file from the remote server
-func (f *FTP) Copy(src, dst string) (err error) {
-	// Log
-	l := fmt.Sprintf("FTP copy from %s to %s", src, dst)
-	f.Logger.Debugf("[Start] %s", l)
-	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
-	}(time.Now())
-
-	// Connect
-	if err = f.Connect(); err != nil {
-		return
-	}
-
-	// Download file
-	var r io.ReadCloser
-	f.Logger.Debugf("Downloading %s", src)
-	if r, err = f.conn.Retr(src); err != nil {
-		return
-	}
-	defer r.Close()
-
-	// Create the destination file
-	var dstFile *os.File
-	f.Logger.Debugf("Creating %s", dst)
-	if dstFile, err = os.Create(dst); err != nil {
-		return
-	}
-	defer dstFile.Close()
-
-	// Copy to dst
-	var n int64
-	f.Logger.Debugf("Copying downloaded content to %s", dst)
-	n, err = io.Copy(dstFile, r)
-	f.Logger.Debugf("Copied %dkb", n/1024)
-	return
-}
-
 // Dial dials in the FTP server
 func (f *FTP) Dial() (err error) {
 	// Log
@@ -113,10 +75,10 @@ func (f *FTP) Login() error {
 	return f.conn.Login(f.Username, f.Password)
 }
 
-// Move moves a file from the remote server
-func (f *FTP) Move(src, dst string) (err error) {
+// Download downloads a file from the remote server
+func (f *FTP) Download(src, dst string) (err error) {
 	// Log
-	l := fmt.Sprintf("FTP move from %s to %s", src, dst)
+	l := fmt.Sprintf("FTP download from %s to %s", src, dst)
 	f.Logger.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
 		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
@@ -127,13 +89,26 @@ func (f *FTP) Move(src, dst string) (err error) {
 		return
 	}
 
-	// Copy
-	if err = f.Copy(src, dst); err != nil {
+	// Download file
+	var r io.ReadCloser
+	f.Logger.Debugf("Downloading %s", src)
+	if r, err = f.conn.Retr(src); err != nil {
 		return
 	}
+	defer r.Close()
 
-	// Delete src
-	f.Logger.Debugf("Deleting %s", src)
-	err = f.conn.Delete(src)
+	// Create the destination file
+	var dstFile *os.File
+	f.Logger.Debugf("Creating %s", dst)
+	if dstFile, err = os.Create(dst); err != nil {
+		return
+	}
+	defer dstFile.Close()
+
+	// Copy to dst
+	var n int64
+	f.Logger.Debugf("Copying downloaded content to %s", dst)
+	n, err = io.Copy(dstFile, r)
+	f.Logger.Debugf("Copied %dkb", n/1024)
 	return
 }
