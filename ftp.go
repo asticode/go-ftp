@@ -13,7 +13,6 @@ import (
 // FTP represents an FTP
 type FTP struct {
 	Addr     string
-	conn     *ftp.ServerConn
 	Logger   xlog.Logger
 	Password string
 	Timeout  time.Duration
@@ -31,23 +30,9 @@ func NewFromConfig(c Configuration) *FTP {
 }
 
 // Connect connects to the FTP and logs in
-func (f *FTP) Connect() (err error) {
-	if f.conn == nil {
-		// Dial
-		if err = f.Dial(); err != nil {
-			return
-		}
-
-		// Login
-		err = f.Login()
-	}
-	return
-}
-
-// Dial dials in the FTP server
-func (f *FTP) Dial() (err error) {
+func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 	// Log
-	l := fmt.Sprintf("FTP dial to %s with timeout %s", f.Addr, f.Timeout)
+	l := fmt.Sprintf("FTP connect to %s with timeout %s", f.Addr, f.Timeout)
 	f.Logger.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
 		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
@@ -55,24 +40,19 @@ func (f *FTP) Dial() (err error) {
 
 	// Dial
 	if f.Timeout > 0 {
-		f.conn, err = ftp.DialTimeout(f.Addr, f.Timeout)
+		conn, err = ftp.DialTimeout(f.Addr, f.Timeout)
 	} else {
-		f.conn, err = ftp.Dial(f.Addr)
+		conn, err = ftp.Dial(f.Addr)
 	}
-	return
-}
-
-// Login signs in to the FTP server
-func (f *FTP) Login() error {
-	// Log
-	l := fmt.Sprintf("FTP login to %s", f.Addr)
-	f.Logger.Debugf("[Start] %s", l)
-	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
-	}(time.Now())
+	if err != nil {
+		return
+	}
 
 	// Login
-	return f.conn.Login(f.Username, f.Password)
+	if err = conn.Login(f.Username, f.Password); err != nil {
+		conn.Quit()
+	}
+	return
 }
 
 // Download downloads a file from the remote server
@@ -85,14 +65,16 @@ func (f *FTP) Download(src, dst string) (err error) {
 	}(time.Now())
 
 	// Connect
-	if err = f.Connect(); err != nil {
+	var conn *ftp.ServerConn
+	if conn, err = f.Connect(); err != nil {
 		return
 	}
+	defer conn.Quit()
 
 	// Download file
 	var r io.ReadCloser
 	f.Logger.Debugf("Downloading %s", src)
-	if r, err = f.conn.Retr(src); err != nil {
+	if r, err = conn.Retr(src); err != nil {
 		return
 	}
 	defer r.Close()
