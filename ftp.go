@@ -19,8 +19,8 @@ type FTP struct {
 	Username string
 }
 
-// NewFromConfig creates a new FTP connection based on a configuration
-func NewFromConfig(c Configuration) *FTP {
+// New creates a new FTP connection based on a configuration
+func New(c Configuration) *FTP {
 	return &FTP{
 		Addr:     c.Addr,
 		Password: c.Password,
