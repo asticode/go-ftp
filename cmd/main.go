@@ -1,30 +1,33 @@
 package main
 
 import (
-	"flag"
+	stlflag "flag"
+
+	"time"
 
 	"github.com/asticode/go-ftp"
+	"github.com/asticode/go-toolkit/flag"
 	"github.com/molotovtv/go-logger"
-	"github.com/molotovtv/go-toolbox"
 	"github.com/rs/xlog"
+	"golang.org/x/net/context"
 )
 
 // Flags
 var (
-	outputPath = flag.String("o", "", "the output path")
-	inputPath  = flag.String("i", "", "the input path")
+	outputPath = stlflag.String("o", "", "the output path")
+	inputPath  = stlflag.String("i", "", "the input path")
 )
 
 func main() {
 	// Get subcommand
-	s := toolbox.Subcommand()
-	flag.Parse()
+	s := flag.Subcommand()
+	stlflag.Parse()
 
 	// Init logger
 	l := xlog.New(logger.NewConfig(logger.FlagConfig()))
 
 	// Init ftp
-	f := ftp.NewFromConfig(ftp.FlagConfig())
+	f := ftp.New(ftp.FlagConfig())
 	f.Logger = l
 
 	// Log
@@ -33,7 +36,8 @@ func main() {
 	// Switch on subcommand
 	switch s {
 	case "download":
-		if err := f.Download(*inputPath, *outputPath); err != nil {
+		var ctx, _ = context.WithTimeout(context.Background(), 10*time.Minute)
+		if err := f.Download(*inputPath, *outputPath, ctx); err != nil {
 			l.Fatal(err)
 		}
 	default:

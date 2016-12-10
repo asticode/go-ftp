@@ -2,10 +2,13 @@ package ftp
 
 import (
 	"fmt"
-	"io"
+	stlio "io"
 	"os"
 	"time"
 
+	"context"
+
+	"github.com/asticode/go-toolkit/io"
 	"github.com/jlaffaye/ftp"
 	"github.com/rs/xlog"
 )
@@ -56,13 +59,15 @@ func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 }
 
 // Download downloads a file from the remote server
-func (f *FTP) Download(src, dst string) (err error) {
+func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP download from %s to %s", src, dst)
 	f.Logger.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
 		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
+
+	// TODO Handle when cancel is done between connect + download + create destination file
 
 	// Connect
 	var conn *ftp.ServerConn
@@ -72,7 +77,7 @@ func (f *FTP) Download(src, dst string) (err error) {
 	defer conn.Quit()
 
 	// Download file
-	var r io.ReadCloser
+	var r stlio.ReadCloser
 	f.Logger.Debugf("Downloading %s", src)
 	if r, err = conn.Retr(src); err != nil {
 		return
@@ -90,7 +95,7 @@ func (f *FTP) Download(src, dst string) (err error) {
 	// Copy to dst
 	var n int64
 	f.Logger.Debugf("Copying downloaded content to %s", dst)
-	n, err = io.Copy(dstFile, r)
+	n, err = io.Copy(ctx, r, dstFile)
 	f.Logger.Debugf("Copied %dkb", n/1024)
 	return
 }
