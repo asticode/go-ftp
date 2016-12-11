@@ -67,7 +67,10 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
-	// TODO Handle when cancel is done between connect + download + create destination file
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
 
 	// Connect
 	var conn *ftp.ServerConn
@@ -75,6 +78,11 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 		return
 	}
 	defer conn.Quit()
+
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
 
 	// Download file
 	var r stlio.ReadCloser
@@ -84,6 +92,11 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	}
 	defer r.Close()
 
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
+
 	// Create the destination file
 	var dstFile *os.File
 	f.Logger.Debugf("Creating %s", dst)
@@ -91,6 +104,11 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 		return
 	}
 	defer dstFile.Close()
+
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
 
 	// Copy to dst
 	var n int64
