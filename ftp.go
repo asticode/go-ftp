@@ -1,12 +1,11 @@
 package ftp
 
 import (
+	"context"
 	"fmt"
 	stlio "io"
 	"os"
 	"time"
-
-	"context"
 
 	"github.com/asticode/go-toolkit/io"
 	"github.com/jlaffaye/ftp"
@@ -115,5 +114,52 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	f.Logger.Debugf("Copying downloaded content to %s", dst)
 	n, err = io.Copy(ctx, r, dstFile)
 	f.Logger.Debugf("Copied %dkb", n/1024)
+	return
+}
+
+// Upload uploads a source path content to a destination
+func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
+	// Log
+	l := fmt.Sprintf("FTP Upload to %s", dst)
+	f.Logger.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
+
+	// Connect
+	var conn *ftp.ServerConn
+	if conn, err = f.Connect(); err != nil {
+		return
+	}
+	defer conn.Quit()
+
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
+
+	// Open file
+	var srcFile *os.File
+	f.Logger.Debugf("Opening %s", src)
+	if srcFile, err = os.Open(src); err != nil {
+		return
+	}
+	defer srcFile.Close()
+
+	// Check context error
+	if err = ctx.Err(); err != nil {
+		return
+	}
+
+	// Store
+	f.Logger.Debugf("Uploading %s to %s", src, dst)
+	if err = conn.Stor(dst, io.NewReader(ctx, srcFile)); err != nil {
+		return
+	}
 	return
 }
