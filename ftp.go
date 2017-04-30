@@ -57,6 +57,20 @@ func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 	return
 }
 
+// DownloadReader returns the reader built from the download of a file
+func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r stlio.ReadCloser, err error) {
+	// Connect
+	if conn, err = f.Connect(); err != nil {
+		return
+	}
+
+	// Download file
+	if r, err = conn.Retr(src); err != nil {
+		return
+	}
+	return
+}
+
 // Download downloads a file from the remote server
 func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	// Log
@@ -114,6 +128,30 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	f.Logger.Debugf("Copying downloaded content to %s", dst)
 	n, err = io.Copy(ctx, r, dstFile)
 	f.Logger.Debugf("Copied %dkb", n/1024)
+	return
+}
+
+// Remove removes a file
+func (f *FTP) Remove(src string) (err error) {
+	// Log
+	l := fmt.Sprintf("FTP Remove of %s", src)
+	f.Logger.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	// Connect
+	var conn *ftp.ServerConn
+	if conn, err = f.Connect(); err != nil {
+		return
+	}
+	defer conn.Quit()
+
+	// Remove
+	f.Logger.Debugf("Removing %s", src)
+	if err = conn.Delete(src); err != nil {
+		return
+	}
 	return
 }
 
