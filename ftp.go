@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/asticode/go-toolkit/io"
+	"github.com/asticode/go-astitools/io"
 	"github.com/jlaffaye/ftp"
 	"github.com/rs/xlog"
 )
@@ -126,7 +126,7 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	// Copy to dst
 	var n int64
 	f.Logger.Debugf("Copying downloaded content to %s", dst)
-	n, err = io.Copy(ctx, r, dstFile)
+	n, err = astiio.Copy(ctx, r, dstFile)
 	f.Logger.Debugf("Copied %dkb", n/1024)
 	return
 }
@@ -196,7 +196,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 
 	// Store
 	f.Logger.Debugf("Uploading %s to %s", src, dst)
-	if err = conn.Stor(dst, io.NewReader(ctx, srcFile)); err != nil {
+	if err = conn.Stor(dst, astiio.NewReader(ctx, srcFile)); err != nil {
 		return
 	}
 	return

@@ -6,9 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/asticode/go-astitools/context"
+	"github.com/asticode/go-astitools/flag"
 	"github.com/asticode/go-ftp"
-	"github.com/asticode/go-toolkit/context"
-	"github.com/asticode/go-toolkit/flag"
 	"github.com/molotovtv/go-logger"
 	"github.com/rs/xlog"
 )
@@ -21,7 +21,7 @@ var (
 
 func main() {
 	// Get subcommand
-	s := flag.Subcommand()
+	s := astiflag.Subcommand()
 	stlflag.Parse()
 
 	// Init logger
@@ -35,7 +35,7 @@ func main() {
 	l.Debugf("Subcommand is %s", s)
 
 	// Init canceller
-	var c = context.NewCanceller()
+	var c = asticontext.NewCanceller()
 
 	// Handle signals
 	handleSignals(l, c)
@@ -56,7 +56,7 @@ func main() {
 }
 
 // handleSignals handles signals
-func handleSignals(l xlog.Logger, c *context.Canceller) {
+func handleSignals(l xlog.Logger, c *asticontext.Canceller) {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGABRT, syscall.SIGKILL, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	go func() {
