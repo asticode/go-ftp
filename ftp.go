@@ -3,19 +3,18 @@ package ftp
 import (
 	"context"
 	"fmt"
-	stlio "io"
+	"io"
 	"os"
 	"time"
 
+	"github.com/asticode/go-astilog"
 	"github.com/asticode/go-astitools/io"
 	"github.com/jlaffaye/ftp"
-	"github.com/rs/xlog"
 )
 
 // FTP represents an FTP
 type FTP struct {
 	Addr     string
-	Logger   xlog.Logger
 	Password string
 	Timeout  time.Duration
 	Username string
@@ -35,9 +34,9 @@ func New(c Configuration) *FTP {
 func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 	// Log
 	l := fmt.Sprintf("FTP connect to %s with timeout %s", f.Addr, f.Timeout)
-	f.Logger.Debugf("[Start] %s", l)
+	astilog.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Dial
@@ -58,7 +57,7 @@ func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 }
 
 // DownloadReader returns the reader built from the download of a file
-func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r stlio.ReadCloser, err error) {
+func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r io.ReadCloser, err error) {
 	// Connect
 	if conn, err = f.Connect(); err != nil {
 		return
@@ -75,9 +74,9 @@ func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r stlio.ReadClos
 func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP download from %s to %s", src, dst)
-	f.Logger.Debugf("[Start] %s", l)
+	astilog.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Check context error
@@ -98,8 +97,8 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	}
 
 	// Download file
-	var r stlio.ReadCloser
-	f.Logger.Debugf("Downloading %s", src)
+	var r io.ReadCloser
+	astilog.Debugf("Downloading %s", src)
 	if r, err = conn.Retr(src); err != nil {
 		return
 	}
@@ -112,7 +111,7 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 
 	// Create the destination file
 	var dstFile *os.File
-	f.Logger.Debugf("Creating %s", dst)
+	astilog.Debugf("Creating %s", dst)
 	if dstFile, err = os.Create(dst); err != nil {
 		return
 	}
@@ -125,9 +124,9 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 
 	// Copy to dst
 	var n int64
-	f.Logger.Debugf("Copying downloaded content to %s", dst)
+	astilog.Debugf("Copying downloaded content to %s", dst)
 	n, err = astiio.Copy(ctx, r, dstFile)
-	f.Logger.Debugf("Copied %dkb", n/1024)
+	astilog.Debugf("Copied %dkb", n/1024)
 	return
 }
 
@@ -135,9 +134,9 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 func (f *FTP) Remove(src string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP Remove of %s", src)
-	f.Logger.Debugf("[Start] %s", l)
+	astilog.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Connect
@@ -148,7 +147,7 @@ func (f *FTP) Remove(src string) (err error) {
 	defer conn.Quit()
 
 	// Remove
-	f.Logger.Debugf("Removing %s", src)
+	astilog.Debugf("Removing %s", src)
 	if err = conn.Delete(src); err != nil {
 		return
 	}
@@ -159,9 +158,9 @@ func (f *FTP) Remove(src string) (err error) {
 func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP Upload to %s", dst)
-	f.Logger.Debugf("[Start] %s", l)
+	astilog.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		f.Logger.Debugf("[End] %s in %s", l, time.Since(now))
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Check context error
@@ -183,7 +182,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 
 	// Open file
 	var srcFile *os.File
-	f.Logger.Debugf("Opening %s", src)
+	astilog.Debugf("Opening %s", src)
 	if srcFile, err = os.Open(src); err != nil {
 		return
 	}
@@ -195,7 +194,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	}
 
 	// Store
-	f.Logger.Debugf("Uploading %s to %s", src, dst)
+	astilog.Debugf("Uploading %s to %s", src, dst)
 	if err = conn.Stor(dst, astiio.NewReader(ctx, srcFile)); err != nil {
 		return
 	}
