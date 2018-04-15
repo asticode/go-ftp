@@ -200,3 +200,23 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	}
 	return
 }
+
+// Remove removes a file
+func (f *FTP) FileSize(src string) (s int64, err error) {
+	// Log
+	l := fmt.Sprintf("FTP file size of %s", src)
+	astilog.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	// Connect
+	var conn *ftp.ServerConn
+	if conn, err = f.Connect(); err != nil {
+		return
+	}
+	defer conn.Quit()
+
+	// File size
+	return conn.FileSize(src)
+}
