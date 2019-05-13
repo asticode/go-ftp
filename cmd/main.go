@@ -6,10 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/asticode/go-astilog"
-	"github.com/asticode/go-astitools/context"
-	"github.com/asticode/go-astitools/flag"
-	"github.com/asticode/go-ftp"
+	"github.com/molotovtv/go-astilog"
+	"github.com/molotovtv/go-astitools/context"
+	"github.com/molotovtv/go-astitools/flag"
+	"github.com/molotovtv/go-ftp"
 )
 
 // Flags

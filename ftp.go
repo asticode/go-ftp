@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/asticode/go-astilog"
-	"github.com/asticode/go-astitools/io"
 	"github.com/jlaffaye/ftp"
+	"github.com/molotovtv/go-astilog"
+	astiio "github.com/molotovtv/go-astitools/io"
 )
 
 // FTP represents an FTP
