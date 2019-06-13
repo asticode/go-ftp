@@ -3,74 +3,100 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:5e45f3976fe333b9e852a5a1f20a6d39e9633174e7c984e752ad4bdd2966442c"
   name = "github.com/jlaffaye/ftp"
   packages = ["."]
+  pruneopts = "UT"
   revision = "6a014d5e22e6a0b7c1fcb65f59872e4dd1227111"
 
 [[projects]]
+  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
   version = "v1.0.2"
 
 [[projects]]
+  digest = "1:7c084e0e780596dd2a7e20d25803909a9a43689c153de953520dfbc0b0e51166"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
+  pruneopts = "UT"
   revision = "8029fb3788e5a4a9c00e415f586a6d033f5d38b3"
   version = "v0.1.2"
 
 [[projects]]
+  digest = "1:e150b5fafbd7607e2d638e4e5cf43aa4100124e5593385147b0a74e2733d8b0d"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
+  pruneopts = "UT"
   revision = "c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7"
   version = "v0.0.7"
 
 [[projects]]
   branch = "v2"
+  digest = "1:2f05551611f09aa008ebd663ed97491b613cae8cdf208fa3da820bd3a3636797"
   name = "github.com/molotovtv/go-astilog"
   packages = ["."]
+  pruneopts = "UT"
   revision = "690b1fbd165bc710c64bd05001d6f8999c5ee20c"
 
 [[projects]]
   branch = "master"
+  digest = "1:a7d1502b67ad180431a3993b9c059c4295ab204552016b7f5372e6e8742117e9"
   name = "github.com/molotovtv/go-astitools"
   packages = [
     "context",
     "flag",
-    "io"
+    "io",
   ]
+  pruneopts = "UT"
   revision = "a25287bc89deade59753090321f9c705f60b6756"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = "UT"
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
 
 [[projects]]
+  digest = "1:04457f9f6f3ffc5fea48e71d62f2ca256637dee0a04d710288e27e05c8b41976"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
+  pruneopts = "UT"
   revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
   version = "v1.4.2"
 
 [[projects]]
   branch = "master"
+  digest = "1:bbe51412d9915d64ffaa96b51d409e070665efc5194fcf145c4a27d4133107a4"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
+  pruneopts = "UT"
   revision = "cbcb750295291b33242907a04be40e80801d0cfc"
 
 [[projects]]
   branch = "master"
+  digest = "1:646036a04e163f383d101f40e36fd3354676c7dcccc226d825200a6b9509727a"
   name = "golang.org/x/sys"
   packages = [
     "unix",
-    "windows"
+    "windows",
   ]
+  pruneopts = "UT"
   revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "827ba9dfa51049fed9739cb4612f9c008abdb89d1948958c015098fe04aa2e0c"
+  input-imports = [
+    "github.com/jlaffaye/ftp",
+    "github.com/molotovtv/go-astilog",
+    "github.com/molotovtv/go-astitools/context",
+    "github.com/molotovtv/go-astitools/flag",
+    "github.com/molotovtv/go-astitools/io",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

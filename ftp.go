@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/jlaffaye/ftp"
-	"github.com/molotovtv/go-astilog"
+	astilog "github.com/molotovtv/go-astilog"
 	astiio "github.com/molotovtv/go-astitools/io"
 )
 
@@ -18,20 +20,22 @@ type FTP struct {
 	Password string
 	Timeout  time.Duration
 	Username string
+	dialer   Dialer
 }
 
 // New creates a new FTP connection based on a configuration
-func New(c Configuration) *FTP {
+func New(c Configuration, dialer Dialer) *FTP {
 	return &FTP{
 		Addr:     c.Addr,
 		Password: c.Password,
 		Timeout:  c.Timeout,
 		Username: c.Username,
+		dialer:   dialer,
 	}
 }
 
 // Connect connects to the FTP and logs in
-func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
+func (f *FTP) Connect() (conn ServerConnexion, err error) {
 	// Log
 	l := fmt.Sprintf("FTP connect to %s with timeout %s", f.Addr, f.Timeout)
 	astilog.Debugf("[Start] %s", l)
@@ -41,33 +45,36 @@ func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 
 	// Dial
 	if f.Timeout > 0 {
-		conn, err = ftp.DialTimeout(f.Addr, f.Timeout)
+		conn, err = f.dialer.DialTimeout(f.Addr, f.Timeout)
 	} else {
-		conn, err = ftp.Dial(f.Addr)
+		conn, err = f.dialer.Dial(f.Addr)
 	}
 	if err != nil {
-		return
+		return conn, err
 	}
 
 	// Login
 	if err = conn.Login(f.Username, f.Password); err != nil {
 		conn.Quit()
 	}
-	return
+	// fmt.Print(conn)
+	// os.Exit(0)
+
+	return conn, err
 }
 
 // DownloadReader returns the reader built from the download of a file
-func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r io.ReadCloser, err error) {
+func (f *FTP) DownloadReader(src string) (conn ServerConnexion, r io.ReadCloser, err error) {
 	// Connect
 	if conn, err = f.Connect(); err != nil {
-		return
+		return conn, nil, err
 	}
 
 	// Download file
 	if r, err = conn.Retr(src); err != nil {
-		return
+		return conn, nil, err
 	}
-	return
+	return conn, r, nil
 }
 
 // Download downloads a file from the remote server
@@ -85,7 +92,7 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	}
 
 	// Connect
-	var conn *ftp.ServerConn
+	var conn ServerConnexion
 	if conn, err = f.Connect(); err != nil {
 		return
 	}
@@ -140,7 +147,7 @@ func (f *FTP) Remove(src string) (err error) {
 	}(time.Now())
 
 	// Connect
-	var conn *ftp.ServerConn
+	var conn ServerConnexion
 	if conn, err = f.Connect(); err != nil {
 		return
 	}
@@ -169,7 +176,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	}
 
 	// Connect
-	var conn *ftp.ServerConn
+	var conn ServerConnexion
 	if conn, err = f.Connect(); err != nil {
 		return
 	}
@@ -211,7 +218,7 @@ func (f *FTP) FileSize(src string) (s int64, err error) {
 	}(time.Now())
 
 	// Connect
-	var conn *ftp.ServerConn
+	var conn ServerConnexion
 	if conn, err = f.Connect(); err != nil {
 		return
 	}
@@ -219,4 +226,107 @@ func (f *FTP) FileSize(src string) (s int64, err error) {
 
 	// File size
 	return conn.FileSize(src)
+}
+
+// var FTPConnect = func(f *FTP) (conn *ftp.ServerConn, err error) {
+// 	return nil, f.Connect
+// }
+
+func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string) []*ftp.Entry {
+
+	// Log
+	l := fmt.Sprintf("FTP file list of %s", sFolder)
+	astilog.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	var aFiles, aFilesRaw []*ftp.Entry
+
+	// Connect
+	var conn ServerConnexion
+	conn, err := f.Connect()
+	if err != nil {
+		return aFilesRaw
+	}
+	defer conn.Quit()
+	aFilesRaw, _ = conn.List(sFolder)
+
+	aExtensions := make(map[string]string)
+	for _, sExtension := range aExtensionsAllowed {
+		sExtension = strings.ToLower(sExtension)
+		aExtensions[sExtension] = sExtension
+	}
+	bExtension := len(aExtensions) > 0
+
+	bPattern := len(sPattern) > 0
+
+	for _, oFile := range aFilesRaw {
+		if oFile.Type != ftp.EntryTypeFile {
+			// aFiles = append(aFiles[:k], aFiles[k+1:]...)
+			continue
+		}
+
+		sExtension := f.GetExtensionFile(oFile)
+		if bExtension {
+			if _, err := aExtensions[sExtension]; !err {
+				// aFiles = append(aFiles[:k], aFiles[k+1:]...)
+				continue
+			}
+		}
+
+		if bPattern {
+			sFileName := f.GetFileNameWithoutExtension(oFile.Name)
+			if bMatch, _ := regexp.MatchString(sPattern, sFileName); !bMatch {
+				continue
+			}
+		}
+
+		aFiles = append(aFiles, oFile)
+	}
+
+	return aFiles
+	// return nil
+	// File size
+	// return conn.ListFileSize(src)
+}
+
+func (f *FTP) GetFileNameWithoutExtension(sFileName string) string {
+	aFileName := strings.Split(sFileName, ".")
+	return strings.Join(aFileName[:len(aFileName)-1], ".")
+}
+
+func (f *FTP) GetExtensionFile(oFile *ftp.Entry) string {
+	aFileName := strings.Split(oFile.Name, ".")
+	sExtension := aFileName[len(aFileName)-1]
+	return strings.ToLower(sExtension)
+}
+
+func (f *FTP) Exists(sFilePath string) (b bool, err error) {
+	// Log
+	l := fmt.Sprintf("FTP file exists of %s", sFilePath)
+	astilog.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	// Connect
+	var conn ServerConnexion
+	if conn, err = f.Connect(); err != nil {
+		return false, err
+	}
+	defer conn.Quit()
+
+	aFilePath := strings.Split(sFilePath, "/")
+
+	sFileName := aFilePath[len(aFilePath)-1]
+	aFilePath = aFilePath[:len(aFilePath)-1]
+	sFolder := strings.Join(aFilePath, "/")
+
+	var aExtensions = []string{}
+
+	aFiles := f.List(sFolder, aExtensions, sFileName)
+
+	// File size
+	return len(aFiles) > 0, nil
 }
