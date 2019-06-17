@@ -5,31 +5,13 @@
   branch = "master"
   name = "github.com/jlaffaye/ftp"
   packages = ["."]
-  revision = "6a014d5e22e6a0b7c1fcb65f59872e4dd1227111"
+  revision = "9284a88df536a8e9d80846c718efeeda5e56b898"
 
 [[projects]]
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
   revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
   version = "v1.0.2"
-
-[[projects]]
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  revision = "8029fb3788e5a4a9c00e415f586a6d033f5d38b3"
-  version = "v0.1.2"
-
-[[projects]]
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  revision = "c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7"
-  version = "v0.0.7"
-
-[[projects]]
-  branch = "v2"
-  name = "github.com/molotovtv/go-astilog"
-  packages = ["."]
-  revision = "690b1fbd165bc710c64bd05001d6f8999c5ee20c"
 
 [[projects]]
   branch = "master"
@@ -39,7 +21,13 @@
     "flag",
     "io"
   ]
-  revision = "a25287bc89deade59753090321f9c705f60b6756"
+  revision = "d0287eb1be45059070b5276984cdb01d441a765c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/molotovtv/go-logger"
+  packages = ["."]
+  revision = "4cd8eb7ad2669ffb6b1d6ad1c401f06e961e0f8a"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -49,7 +37,10 @@
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
-  packages = ["."]
+  packages = [
+    ".",
+    "hooks/syslog"
+  ]
   revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
   version = "v1.4.2"
 
@@ -57,7 +48,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "cbcb750295291b33242907a04be40e80801d0cfc"
+  revision = "5c40567a22f818bd14a1ea7245dad9f8ef0691aa"
 
 [[projects]]
   branch = "master"
@@ -66,11 +57,11 @@
     "unix",
     "windows"
   ]
-  revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
+  revision = "15dcb6c0061f497a3f66e3ea034b629c6dd4d99e"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "827ba9dfa51049fed9739cb4612f9c008abdb89d1948958c015098fe04aa2e0c"
+  inputs-digest = "f068f4b36412b97cd6e24acf4ed16dd12d56b17cd813053692b5ecd8bbd1065a"
   solver-name = "gps-cdcl"
   solver-version = 1

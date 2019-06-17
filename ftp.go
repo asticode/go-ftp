@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/jlaffaye/ftp"
-	"github.com/molotovtv/go-astilog"
+	"github.com/molotovtv/go-logger"
 	astiio "github.com/molotovtv/go-astitools/io"
 )
 
@@ -34,9 +34,9 @@ func New(c Configuration) *FTP {
 func (f *FTP) Connect() (conn *ftp.ServerConn, err error) {
 	// Log
 	l := fmt.Sprintf("FTP connect to %s with timeout %s", f.Addr, f.Timeout)
-	astilog.Debugf("[Start] %s", l)
+	log.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Dial
@@ -74,9 +74,9 @@ func (f *FTP) DownloadReader(src string) (conn *ftp.ServerConn, r io.ReadCloser,
 func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP download from %s to %s", src, dst)
-	astilog.Debugf("[Start] %s", l)
+	log.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Check context error
@@ -98,7 +98,7 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 
 	// Download file
 	var r io.ReadCloser
-	astilog.Debugf("Downloading %s", src)
+	log.Debugf("Downloading %s", src)
 	if r, err = conn.Retr(src); err != nil {
 		return
 	}
@@ -111,7 +111,7 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 
 	// Create the destination file
 	var dstFile *os.File
-	astilog.Debugf("Creating %s", dst)
+	log.Debugf("Creating %s", dst)
 	if dstFile, err = os.Create(dst); err != nil {
 		return
 	}
@@ -124,9 +124,9 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 
 	// Copy to dst
 	var n int64
-	astilog.Debugf("Copying downloaded content to %s", dst)
+	log.Debugf("Copying downloaded content to %s", dst)
 	n, err = astiio.Copy(ctx, r, dstFile)
-	astilog.Debugf("Copied %dkb", n/1024)
+	log.Debugf("Copied %dkb", n/1024)
 	return
 }
 
@@ -134,9 +134,9 @@ func (f *FTP) Download(ctx context.Context, src, dst string) (err error) {
 func (f *FTP) Remove(src string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP Remove of %s", src)
-	astilog.Debugf("[Start] %s", l)
+	log.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Connect
@@ -147,7 +147,7 @@ func (f *FTP) Remove(src string) (err error) {
 	defer conn.Quit()
 
 	// Remove
-	astilog.Debugf("Removing %s", src)
+	log.Debugf("Removing %s", src)
 	if err = conn.Delete(src); err != nil {
 		return
 	}
@@ -158,9 +158,9 @@ func (f *FTP) Remove(src string) (err error) {
 func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	// Log
 	l := fmt.Sprintf("FTP Upload to %s", dst)
-	astilog.Debugf("[Start] %s", l)
+	log.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Check context error
@@ -182,7 +182,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 
 	// Open file
 	var srcFile *os.File
-	astilog.Debugf("Opening %s", src)
+	log.Debugf("Opening %s", src)
 	if srcFile, err = os.Open(src); err != nil {
 		return
 	}
@@ -194,7 +194,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	}
 
 	// Store
-	astilog.Debugf("Uploading %s to %s", src, dst)
+	log.Debugf("Uploading %s to %s", src, dst)
 	if err = conn.Stor(dst, astiio.NewReader(ctx, srcFile)); err != nil {
 		return
 	}
@@ -205,9 +205,9 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 func (f *FTP) FileSize(src string) (s int64, err error) {
 	// Log
 	l := fmt.Sprintf("FTP file size of %s", src)
-	astilog.Debugf("[Start] %s", l)
+	log.Debugf("[Start] %s", l)
 	defer func(now time.Time) {
-		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
 	// Connect

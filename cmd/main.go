@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/molotovtv/go-astilog"
+	"github.com/molotovtv/go-logger"
 	"github.com/molotovtv/go-astitools/context"
 	"github.com/molotovtv/go-astitools/flag"
 	"github.com/molotovtv/go-ftp"
@@ -19,18 +19,18 @@ var (
 )
 
 func main() {
+	log.Setup("go-ftp")
 	// Get subcommand
 	s := astiflag.Subcommand()
 	flag.Parse()
-
 	// Init logger
-	astilog.FlagInit()
+	log.FlagInit()
 
 	// Init ftp
 	f := ftp.New(ftp.FlagConfig())
 
 	// Log
-	astilog.Debugf("Subcommand is %s", s)
+	log.Debugf("Subcommand is %s", s)
 
 	// Init canceller
 	var c = asticontext.NewCanceller()
@@ -43,12 +43,12 @@ func main() {
 	case "download":
 		var ctx, _ = c.NewContext()
 		if err := f.Download(ctx, *inputPath, *outputPath); err != nil {
-			astilog.Fatal(err)
+			log.Fatal(err)
 		}
 	case "upload":
 		var ctx, _ = c.NewContext()
 		if err := f.Upload(ctx, *inputPath, *outputPath); err != nil {
-			astilog.Fatal(err)
+			log.Fatal(err)
 		}
 	}
 }
@@ -59,7 +59,7 @@ func handleSignals(c *asticontext.Canceller) {
 	signal.Notify(ch, syscall.SIGABRT, syscall.SIGKILL, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	go func() {
 		for s := range ch {
-			astilog.Debugf("Received signal %s", s)
+			log.Debugf("Received signal %s", s)
 			c.Cancel()
 		}
 	}()
