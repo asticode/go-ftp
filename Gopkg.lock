@@ -2,66 +2,184 @@
 
 
 [[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
   branch = "master"
+  digest = "1:8de9d898521b9e83a21276bfab10e477862ca18f8d08c20c0e542bbaf35c2ec5"
   name = "github.com/jlaffaye/ftp"
   packages = ["."]
+  pruneopts = "UT"
   revision = "9284a88df536a8e9d80846c718efeeda5e56b898"
 
 [[projects]]
+  digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
   version = "v1.0.2"
 
 [[projects]]
+  digest = "1:7c084e0e780596dd2a7e20d25803909a9a43689c153de953520dfbc0b0e51166"
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8029fb3788e5a4a9c00e415f586a6d033f5d38b3"
+  version = "v0.1.2"
+
+[[projects]]
+  digest = "1:9b90c7639a41697f3d4ad12d7d67dfacc9a7a4a6e0bbfae4fc72d0da57c28871"
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1311e847b0cb909da63b5fecfb5370aa66236465"
+  version = "v0.0.8"
+
+[[projects]]
+  digest = "1:127c6fac3fb69da470e53b3102a3358b84ba3299176f69b257bd4e84a86a1f9b"
+  name = "github.com/molotovtv/go-astilog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4503e46c05344be83ce41106ebabd9494debce18"
+  version = "v2.0.0"
+
+[[projects]]
   branch = "master"
+  digest = "1:a7d1502b67ad180431a3993b9c059c4295ab204552016b7f5372e6e8742117e9"
   name = "github.com/molotovtv/go-astitools"
   packages = [
     "context",
     "flag",
-    "io"
+    "io",
   ]
+  pruneopts = "UT"
   revision = "d0287eb1be45059070b5276984cdb01d441a765c"
 
 [[projects]]
   branch = "master"
+  digest = "1:f580fd1178350fc59d29069f7594daf75a6056ca680271d3189b8cb7daa2e194"
   name = "github.com/molotovtv/go-logger"
   packages = ["."]
+  pruneopts = "UT"
   revision = "4cd8eb7ad2669ffb6b1d6ad1c401f06e961e0f8a"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = "UT"
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
 
 [[projects]]
+  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "UT"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:9665a593c0199c193341b8b110e31b19c899923711fc70bde2c2f3eb2d337526"
+  name = "github.com/rs/xhandler"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d9d9599b6aaf6a058cb7b1f48291ded2cbd13390"
+  version = "v1.0"
+
+[[projects]]
+  digest = "1:2e76a73cb51f42d63a2a1a85b3dc5731fd4faf6821b434bd0ef2c099186031d6"
+  name = "github.com/rs/xid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "15d26544def341f036c5f8dca987a4cbe575032c"
+  version = "v1.2.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:7f3ea38184df74083f8edb1b5398399a882334336feec5b3b599502e940d8dec"
+  name = "github.com/rs/xlog"
+  packages = [
+    ".",
+    "internal/term",
+  ]
+  pruneopts = "UT"
+  revision = "131980fab91b04c953b9dcb438298a7f06cf76cb"
+
+[[projects]]
+  digest = "1:0a406a3f53396d476d8673920e58a1100ed706e3e6666a0355e6d32cb3430651"
   name = "github.com/sirupsen/logrus"
   packages = [
     ".",
-    "hooks/syslog"
+    "hooks/syslog",
   ]
+  pruneopts = "UT"
   revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
   version = "v1.4.2"
 
 [[projects]]
+  digest = "1:ac83cf90d08b63ad5f7e020ef480d319ae890c208f8524622a2f3136e2686b02"
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "477a77ecc69700c7cdeb1fa9e129548e1c1c393c"
+  version = "v0.1.1"
+
+[[projects]]
+  digest = "1:0bcc464dabcfad5393daf87c3f8142911d0f6c52569b837e91a1c15e890265f3"
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "mock",
+  ]
+  pruneopts = "UT"
+  revision = "ffdc059bfe9ce6a4e144ba849dbedead332c6053"
+  version = "v1.3.0"
+
+[[projects]]
   branch = "master"
+  digest = "1:bbe51412d9915d64ffaa96b51d409e070665efc5194fcf145c4a27d4133107a4"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
+  pruneopts = "UT"
   revision = "5c40567a22f818bd14a1ea7245dad9f8ef0691aa"
 
 [[projects]]
   branch = "master"
+  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  pruneopts = "UT"
+  revision = "d28f0bde5980168871434b95cfc858db9f2a7a99"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3398992b8f4b00ce4a6a5f9770008cf66dcff8f128b51eeab8c1f657096cac8f"
   name = "golang.org/x/sys"
   packages = [
     "unix",
-    "windows"
+    "windows",
   ]
+  pruneopts = "UT"
   revision = "15dcb6c0061f497a3f66e3ea034b629c6dd4d99e"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f068f4b36412b97cd6e24acf4ed16dd12d56b17cd813053692b5ecd8bbd1065a"
+  input-imports = [
+    "github.com/jlaffaye/ftp",
+    "github.com/molotovtv/go-astilog",
+    "github.com/molotovtv/go-astitools/context",
+    "github.com/molotovtv/go-astitools/flag",
+    "github.com/molotovtv/go-astitools/io",
+    "github.com/molotovtv/go-logger",
+    "github.com/stretchr/testify/mock",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
