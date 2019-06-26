@@ -331,3 +331,42 @@ func (f *FTP) Exists(sFilePath string) (b bool, err error) {
 	// File size
 	return len(aFiles) > 0, nil
 }
+
+//CreateDir do
+func (f *FTP) CreateDir(sPath string) (err error) {
+
+	// Connect
+	var conn ServerConnexion
+	if conn, err = f.Connect(); err != nil {
+		return err
+	}
+	defer conn.Quit()
+
+	return conn.MakeDir(sPath)
+}
+
+//RemoveDir do
+func (f *FTP) RemoveDir(sPath string) (err error) {
+
+	// Connect
+	var conn ServerConnexion
+	if conn, err = f.Connect(); err != nil {
+		return err
+	}
+	defer conn.Quit()
+
+	return conn.RemoveDir(sPath)
+}
+
+//Rename do
+func (f *FTP) Rename(sSource string, sDestination string) (err error) {
+
+	// Connect
+	var conn ServerConnexion
+	if conn, err = f.Connect(); err != nil {
+		return err
+	}
+	defer conn.Quit()
+
+	return conn.Rename(sSource, sDestination)
+}

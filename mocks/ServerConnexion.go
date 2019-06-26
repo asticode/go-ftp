@@ -83,6 +83,20 @@ func (_m *ServerConnexion) Login(sUsername string, sPwd string) error {
 	return r0
 }
 
+// MakeDir provides a mock function with given fields: sSource
+func (_m *ServerConnexion) MakeDir(sSource string) error {
+	ret := _m.Called(sSource)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(sSource)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Quit provides a mock function with given fields:
 func (_m *ServerConnexion) Quit() error {
 	ret := _m.Called()
@@ -90,6 +104,34 @@ func (_m *ServerConnexion) Quit() error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
 		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// RemoveDir provides a mock function with given fields: sSource
+func (_m *ServerConnexion) RemoveDir(sSource string) error {
+	ret := _m.Called(sSource)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(sSource)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Rename provides a mock function with given fields: sSource, sDestination
+func (_m *ServerConnexion) Rename(sSource string, sDestination string) error {
+	ret := _m.Called(sSource, sDestination)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(sSource, sDestination)
 	} else {
 		r0 = ret.Error(0)
 	}
