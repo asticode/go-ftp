@@ -6,10 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/molotovtv/go-logger"
 	"github.com/molotovtv/go-astitools/context"
 	"github.com/molotovtv/go-astitools/flag"
 	"github.com/molotovtv/go-ftp"
+	"github.com/molotovtv/go-logger"
 )
 
 // Flags
@@ -27,7 +27,7 @@ func main() {
 	log.FlagInit()
 
 	// Init ftp
-	f := ftp.New(ftp.FlagConfig())
+	f := ftp.New(ftp.FlagConfig(), ftp.NewDefaultDialer())
 
 	// Log
 	log.Debugf("Subcommand is %s", s)
