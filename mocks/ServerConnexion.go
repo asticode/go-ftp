@@ -125,6 +125,20 @@ func (_m *ServerConnexion) RemoveDir(sSource string) error {
 	return r0
 }
 
+// RemoveDirRecur provides a mock function with given fields: sSource
+func (_m *ServerConnexion) RemoveDirRecur(sSource string) error {
+	ret := _m.Called(sSource)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(sSource)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Rename provides a mock function with given fields: sSource, sDestination
 func (_m *ServerConnexion) Rename(sSource string, sDestination string) error {
 	ret := _m.Called(sSource, sDestination)

@@ -9,7 +9,7 @@ import (
 	"github.com/molotovtv/go-astitools/context"
 	"github.com/molotovtv/go-astitools/flag"
 	"github.com/molotovtv/go-ftp"
-	"github.com/molotovtv/go-logger"
+	log "github.com/molotovtv/go-logger"
 )
 
 // Flags

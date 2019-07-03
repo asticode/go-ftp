@@ -13,6 +13,7 @@ type ServerConnexion interface {
 	Stor(path string, oReader io.Reader) error
 	MakeDir(sSource string) error
 	RemoveDir(sSource string) error
+	RemoveDirRecur(sSource string) error
 	Rename(sSource string, sDestination string) error
 	Delete(oath string) error
 	Quit() error

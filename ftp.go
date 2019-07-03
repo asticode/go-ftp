@@ -209,7 +209,7 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 	return
 }
 
-// Remove removes a file
+// FileSize do
 func (f *FTP) FileSize(src string) (s int64, err error) {
 	// Log
 	l := fmt.Sprintf("FTP file size of %s", src)
@@ -251,7 +251,12 @@ func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string)
 		return aFilesRaw
 	}
 	defer conn.Quit()
-	aFilesRaw, _ = conn.List(sFolder)
+	aFilesRaw, err = conn.List(sFolder)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return aFiles
+	}
 
 	aExtensions := make(map[string]string)
 	for _, sExtension := range aExtensionsAllowed {
@@ -263,22 +268,26 @@ func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string)
 	bPattern := len(sPattern) > 0
 
 	for _, oFile := range aFilesRaw {
-		if oFile.Type != ftp.EntryTypeFile {
-			// aFiles = append(aFiles[:k], aFiles[k+1:]...)
+
+		if oFile.Type != ftp.EntryTypeFile && oFile.Type != ftp.EntryTypeFolder {
+			continue
+		}
+
+		aListToClean := map[string]string{".": ".", "..": ".."}
+		_, ok := aListToClean[oFile.Name]
+		if oFile.Type == ftp.EntryTypeFolder && ok {
 			continue
 		}
 
 		sExtension := f.GetExtensionFile(oFile)
 		if bExtension {
 			if _, err := aExtensions[sExtension]; !err {
-				// aFiles = append(aFiles[:k], aFiles[k+1:]...)
 				continue
 			}
 		}
 
 		if bPattern {
-			sFileName := f.GetFileNameWithoutExtension(oFile.Name)
-			if bMatch, _ := regexp.MatchString(sPattern, sFileName); !bMatch {
+			if bMatch, _ := regexp.MatchString(sPattern, oFile.Name); !bMatch {
 				continue
 			}
 		}
@@ -294,6 +303,9 @@ func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string)
 
 func (f *FTP) GetFileNameWithoutExtension(sFileName string) string {
 	aFileName := strings.Split(sFileName, ".")
+	if len(aFileName) == 1 {
+		return sFileName
+	}
 	return strings.Join(aFileName[:len(aFileName)-1], ".")
 }
 
@@ -328,7 +340,6 @@ func (f *FTP) Exists(sFilePath string) (b bool, err error) {
 
 	aFiles := f.List(sFolder, aExtensions, sFileName)
 
-	// File size
 	return len(aFiles) > 0, nil
 }
 
@@ -358,6 +369,19 @@ func (f *FTP) RemoveDir(sPath string) (err error) {
 	return conn.RemoveDir(sPath)
 }
 
+//RemoveDirRecur do
+func (f *FTP) RemoveDirRecur(sPath string) (err error) {
+
+	// Connect
+	var conn ServerConnexion
+	if conn, err = f.Connect(); err != nil {
+		return err
+	}
+	defer conn.Quit()
+
+	return conn.RemoveDirRecur(sPath)
+}
+
 //Rename do
 func (f *FTP) Rename(sSource string, sDestination string) (err error) {
 
@@ -368,5 +392,33 @@ func (f *FTP) Rename(sSource string, sDestination string) (err error) {
 	}
 	defer conn.Quit()
 
+	aDestination := strings.Split(sDestination, "/")
+	sDestinationFolder := strings.Join(aDestination[:len(aDestination)-1], "/")
+
+	f.checkFolders(sDestinationFolder)
+
 	return conn.Rename(sSource, sDestination)
+}
+
+func (f *FTP) checkFolders(sFolder string) {
+
+	if len(sFolder) == 0 {
+		return
+	}
+
+	ok, err := f.Exists(sFolder)
+	if ok && err == nil {
+		return
+	}
+
+	aFolder := strings.Split(sFolder, "/")
+
+	if len(aFolder) == 2 {
+		f.CreateDir(sFolder)
+		return
+	}
+
+	f.checkFolders(strings.Join(aFolder[:len(aFolder)-1], "/"))
+	f.CreateDir(sFolder)
+
 }

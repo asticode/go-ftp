@@ -155,9 +155,11 @@ func TestFTP_List(t *testing.T) {
 	aFiles := getListOfFiles()
 	oFtp := NewFtp(getMockOfServerConnexion(aFiles))
 
-	aExpectedSimple := aFiles[:5]
+	aExpectedSimple := aFiles[:7]
 	aExpectedByExtension := aFiles[1:4]
-	aExpectedByPattern := aFiles[1:5]
+	aExpectedByPattern := []*base.Entry{}
+	aExpectedByPattern = append(aExpectedByPattern, aFiles[1:5]...)
+	aExpectedByPattern = append(aExpectedByPattern, aFiles[6])
 
 	tests := []struct {
 		name   string
@@ -197,14 +199,6 @@ func TestFTP_List(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			// f := ftp.New{
-			// 	Addr:     tt.fields.Addr,
-			// 	Password: tt.fields.Password,
-			// 	Timeout:  tt.fields.Timeout,
-			// 	Username: tt.fields.Username,
-			// 	dialer:   tt.fields.Dialer,
-			// }
 			if got := oFtp.List(tt.args.sFolder, tt.args.aExtensionsAllowed, tt.args.sPattern); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("base.List() = %v, want %v", got, tt.want)
 			}
@@ -264,6 +258,16 @@ func getListOfFiles() []*base.Entry {
 		Time: time.Now(),
 	}, &base.Entry{
 		Name: "folder-test",
+		Type: base.EntryTypeFolder,
+		Size: 1000,
+		Time: time.Now(),
+	}, &base.Entry{
+		Name: ".",
+		Type: base.EntryTypeFolder,
+		Size: 1000,
+		Time: time.Now(),
+	}, &base.Entry{
+		Name: "..",
 		Type: base.EntryTypeFolder,
 		Size: 1000,
 		Time: time.Now(),
