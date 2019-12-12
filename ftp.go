@@ -12,7 +12,7 @@ import (
 	"github.com/jlaffaye/ftp"
 	astilog "github.com/molotovtv/go-astilog"
 	astiio "github.com/molotovtv/go-astitools/io"
-	"github.com/molotovtv/go-logger"
+	log "github.com/molotovtv/go-logger"
 )
 
 // FTP represents an FTP
@@ -420,5 +420,25 @@ func (f *FTP) checkFolders(sFolder string) {
 
 	f.checkFolders(strings.Join(aFolder[:len(aFolder)-1], "/"))
 	f.CreateDir(sFolder)
+
+}
+
+//CreateFile in folder with content in param
+func (f *FTP) CreateFile(sPath string, content string) error {
+
+	if len(sPath) == 0 {
+		return nil
+	}
+
+	// Connect
+	var conn ServerConnexion
+	var err error
+
+	if conn, err = f.Connect(); err != nil {
+		return err
+	}
+	defer conn.Quit()
+
+	return conn.Stor(sPath, strings.NewReader(content))
 
 }
