@@ -424,7 +424,7 @@ func (f *FTP) checkFolders(sFolder string) {
 }
 
 //CreateFile in folder with content in param
-func (f *FTP) CreateFile(sPath string, content string) error {
+func (f *FTP) CreateFile(sPath string, reader io.Reader) error {
 
 	if len(sPath) == 0 {
 		return nil
@@ -439,6 +439,6 @@ func (f *FTP) CreateFile(sPath string, content string) error {
 	}
 	defer conn.Quit()
 
-	return conn.Stor(sPath, strings.NewReader(content))
+	return conn.Stor(sPath, reader)
 
 }
