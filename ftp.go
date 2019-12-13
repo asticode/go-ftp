@@ -248,6 +248,7 @@ func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string)
 	var conn ServerConnexion
 	conn, err := f.Connect()
 	if err != nil {
+		fmt.Println(err.Error())
 		return aFilesRaw
 	}
 	defer conn.Quit()
