@@ -171,42 +171,32 @@ func (f *FTP) Upload(ctx context.Context, src, dst string) (err error) {
 		log.Debugf("[End] %s in %s", l, time.Since(now))
 	}(time.Now())
 
-	// Check context error
-	if err = ctx.Err(); err != nil {
-		return
-	}
-
-	// Connect
-	var conn ServerConnexion
-	if conn, err = f.Connect(); err != nil {
-		return
-	}
-	defer conn.Quit()
-
-	// Check context error
-	if err = ctx.Err(); err != nil {
-		return
-	}
-
-	// Open file
 	var srcFile *os.File
 	log.Debugf("Opening %s", src)
 	if srcFile, err = os.Open(src); err != nil {
 		return
 	}
-	defer srcFile.Close()
+	defer func() { _ = srcFile.Close() }()
+
+	return f.UploadReader(ctx, srcFile, dst)
+}
+
+// UploadReader uploads a reader content to a destination
+func (f *FTP) UploadReader(ctx context.Context, reader io.Reader, dst string) error {
+	conn, err := f.Connect()
+
+	if err != nil {
+		return err
+	}
+	defer func() { _ = conn.Quit() }()
 
 	// Check context error
 	if err = ctx.Err(); err != nil {
-		return
+		return err
 	}
 
-	// Store
-	log.Debugf("Uploading %s to %s", src, dst)
-	if err = conn.Stor(dst, astiio.NewReader(ctx, srcFile)); err != nil {
-		return
-	}
-	return
+	log.Debugf("Uploading to %s", dst)
+	return conn.Stor(dst, astiio.NewReader(ctx, reader))
 }
 
 // FileSize do

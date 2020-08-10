@@ -23,8 +23,6 @@ func main() {
 	// Get subcommand
 	s := astiflag.Subcommand()
 	flag.Parse()
-	// Init logger
-	log.FlagInit()
 
 	// Init ftp
 	f := ftp.New(ftp.FlagConfig(), ftp.NewDefaultDialer())
