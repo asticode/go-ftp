@@ -300,12 +300,14 @@ func (f *FTP) GetFileNameWithoutExtension(sFileName string) string {
 	return strings.Join(aFileName[:len(aFileName)-1], ".")
 }
 
+//GetExtensionFile do
 func (f *FTP) GetExtensionFile(oFile *ftp.Entry) string {
 	aFileName := strings.Split(oFile.Name, ".")
 	sExtension := aFileName[len(aFileName)-1]
 	return strings.ToLower(sExtension)
 }
 
+//Exists do
 func (f *FTP) Exists(sFilePath string) (b bool, err error) {
 	// Log
 	l := fmt.Sprintf("FTP file exists of %s", sFilePath)
