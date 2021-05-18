@@ -223,6 +223,7 @@ func (f *FTP) FileSize(src string) (s int64, err error) {
 // 	return nil, f.Connect
 // }
 
+//List do
 func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string) []*ftp.Entry {
 
 	// Log
@@ -292,6 +293,52 @@ func (f *FTP) List(sFolder string, aExtensionsAllowed []string, sPattern string)
 	// return conn.ListFileSize(src)
 }
 
+//ListFolders do
+func (f *FTP) ListFolders(sFolder string) []*ftp.Entry {
+
+	// Log
+	l := fmt.Sprintf("FTP list folder of %s", sFolder)
+	astilog.Debugf("[Start] %s", l)
+	defer func(now time.Time) {
+		astilog.Debugf("[End] %s in %s", l, time.Since(now))
+	}(time.Now())
+
+	var aFolders, aFilesRaw []*ftp.Entry
+
+	// Connect
+	var conn ServerConnexion
+	conn, err := f.Connect()
+	if err != nil {
+		log.Errorf("[FTP] error : %s", err.Error())
+		return aFilesRaw
+	}
+	defer conn.Quit()
+	aFilesRaw, err = conn.List(sFolder)
+
+	if err != nil {
+		log.Errorf("[FTP] error : %s", err.Error())
+		return aFolders
+	}
+
+	for _, oFile := range aFilesRaw {
+
+		if oFile.Type != ftp.EntryTypeFolder {
+			continue
+		}
+
+		aListToClean := map[string]string{".": ".", "..": ".."}
+		_, ok := aListToClean[oFile.Name]
+		if ok {
+			continue
+		}
+
+		aFolders = append(aFolders, oFile)
+	}
+
+	return aFolders
+}
+
+//GetFileNameWithoutExtension do
 func (f *FTP) GetFileNameWithoutExtension(sFileName string) string {
 	aFileName := strings.Split(sFileName, ".")
 	if len(aFileName) == 1 {
