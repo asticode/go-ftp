@@ -312,3 +312,61 @@ func getListOfFiles() []*base.Entry {
 // 		})
 // 	}
 // }
+
+func TestFTP_Exists(t *testing.T) {
+	type fields struct {
+		Addr     string
+		Password string
+		Timeout  time.Duration
+		Username string
+	}
+	type args struct {
+		sFilePath string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantB   bool
+		wantErr bool
+	}{
+		{
+			name: "Test file exists",
+			// fields: fields{},
+			args: args{
+				sFilePath: "test.txt",
+			},
+			wantB:   true,
+			wantErr: false,
+		},
+		{
+			name: "Test file doesn't exists",
+			// fields: fields{},
+			args: args{
+				sFilePath: "test2.txt",
+			},
+			wantB:   false,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := ftp.New(ftp.Configuration{
+				Addr:     tt.fields.Addr,
+				Password: tt.fields.Password,
+				Timeout:  tt.fields.Timeout,
+				Username: tt.fields.Username,
+			}, ftp.NewDefaultDialer())
+			f.Connect()
+
+			gotB, err := f.Exists(tt.args.sFilePath)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FTP.Exists() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotB != tt.wantB {
+				t.Errorf("FTP.Exists() = %v, want %v", gotB, tt.wantB)
+			}
+		})
+	}
+}
