@@ -371,7 +371,7 @@ func (f *FTP) Exists(sFilePath string) (b bool, err error) {
 	defer conn.Quit()
 
 	if _, err := conn.FileSize(sFilePath); err != nil {
-		return false, err
+		return false, nil
 	}
 
 	return true, nil

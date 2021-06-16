@@ -346,7 +346,7 @@ func TestFTP_Exists(t *testing.T) {
 				sFilePath: "test2.txt",
 			},
 			wantB:   false,
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
