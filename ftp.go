@@ -370,17 +370,11 @@ func (f *FTP) Exists(sFilePath string) (b bool, err error) {
 	}
 	defer conn.Quit()
 
-	aFilePath := strings.Split(sFilePath, "/")
+	if _, err := conn.FileSize(sFilePath); err != nil {
+		return false, err
+	}
 
-	sFileName := aFilePath[len(aFilePath)-1]
-	aFilePath = aFilePath[:len(aFilePath)-1]
-	sFolder := strings.Join(aFilePath, "/")
-
-	var aExtensions = []string{}
-
-	aFiles := f.List(sFolder, aExtensions, sFileName)
-
-	return len(aFiles) > 0, nil
+	return true, nil
 }
 
 //CreateDir do
