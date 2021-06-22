@@ -17,26 +17,41 @@ import (
 
 // FTP represents an FTP
 type FTP struct {
-	Addr     string
-	Password string
-	Timeout  time.Duration
-	Username string
-	dialer   Dialer
+	Addr          string
+	Password      string
+	Timeout       time.Duration
+	Username      string
+	dialer        Dialer
+	persistent    bool
+	ttl           time.Duration
+	nextConnexion time.Time
+	connexion     ServerConnexion
 }
 
 // New creates a new FTP connection based on a configuration
 func New(c Configuration, dialer Dialer) *FTP {
-	return &FTP{
-		Addr:     c.Addr,
-		Password: c.Password,
-		Timeout:  c.Timeout,
-		Username: c.Username,
-		dialer:   dialer,
+	ftp := &FTP{
+		Addr:       c.Addr,
+		Password:   c.Password,
+		Timeout:    c.Timeout,
+		Username:   c.Username,
+		dialer:     dialer,
+		persistent: c.Persistent,
+		ttl:        c.TTL,
 	}
+
+	if ftp.persistent {
+		err := ftp.pconnect()
+		if err != nil {
+			log.Errorf("ftp persistent connexion fail : %+v", err)
+		}
+	}
+
+	return ftp
 }
 
-// Connect connects to the FTP and logs in
-func (f *FTP) Connect() (conn ServerConnexion, err error) {
+// connect connects to the FTP and logs in
+func (f *FTP) connect() (conn ServerConnexion, err error) {
 	// Log
 	l := fmt.Sprintf("FTP connect to %s with timeout %s", f.Addr, f.Timeout)
 	log.Debugf("[Start] %s", l)
@@ -58,10 +73,34 @@ func (f *FTP) Connect() (conn ServerConnexion, err error) {
 	if err = conn.Login(f.Username, f.Password); err != nil {
 		conn.Quit()
 	}
-	// fmt.Print(conn)
-	// os.Exit(0)
-
 	return conn, err
+}
+
+// pconnect connects to the FTP and logs in
+func (f *FTP) pconnect() (err error) {
+	c, err := f.connect()
+	if err != nil {
+		return err
+	}
+	f.connexion = c
+	f.nextConnexion = time.Now().Add(f.ttl * time.Second)
+	return nil
+}
+
+// Connect connects to the FTP and logs in
+func (f *FTP) Connect() (conn ServerConnexion, err error) {
+
+	if f.persistent {
+		if f.connexion != nil || f.nextConnexion.Unix() < time.Now().Unix() {
+			err := f.pconnect()
+			if err != nil {
+				return f.connexion, err
+			}
+		}
+		return f.connexion, nil
+	}
+
+	return f.connect()
 }
 
 // DownloadReader returns the reader built from the download of a file
